@@ -29,7 +29,7 @@ jobs:
       - run: npm run lint --if-present || true
       - run: npm test --if-present
 
-  deploy:
+      deploy:
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -44,10 +44,20 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
+      # We explicitly pass the IDs here to prevent trailing newline errors
       - name: Pull Vercel Environment Information
         working-directory: ./front-end
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        run: |
+          vercel pull --yes \
+            --environment=production \
+            --token=${{ secrets.VERCEL_TOKEN }} \
+            --project-id="${{ secrets.VERCEL_PROJECT_ID_FRONTEND }}" \
+            --org-id="${{ secrets.VERCEL_ORG_ID }}"
 
       - name: Deploy Frontend to Vercel
         working-directory: ./front-end
-        run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: |
+          vercel deploy --prod \
+            --token=${{ secrets.VERCEL_TOKEN }} \
+            --project-id="${{ secrets.VERCEL_PROJECT_ID_FRONTEND }}" \
+            --org-id="${{ secrets.VERCEL_ORG_ID }}"
