@@ -1,0 +1,21 @@
+# dependencies
+node_modules/
+
+# environment files (never commit secrets)
+.env
+.env.local
+.env.*.local
+
+# vercel local link data
+.vercel
+
+# build output
+dist/
+build/
+
+# test output
+coverage/
+
+# logs & OS noise
+*.log
+.DS_Store
