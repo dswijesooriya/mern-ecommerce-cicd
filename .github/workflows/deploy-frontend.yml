@@ -28,8 +28,7 @@ jobs:
       - run: npm ci
       - run: npm run lint --if-present || true
       - run: npm test --if-present
-
-      deploy:
+  deploy:
     needs: test
     runs-on: ubuntu-latest
     steps:
