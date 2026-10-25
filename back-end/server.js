@@ -15,11 +15,11 @@ connectDB()
 app.use(express.json())
 const cors = require('cors');
 
-const allowedOrigins = [
-  'http://localhost:5173', // Your local Vite dev server
-  'http://localhost:3000', // In case you use CRA
-  'https://mern-ecommerce-front-end-delta.vercel.app' // Your live frontend
-];
+app.use(cors({
+  origin: 'https://mern-ecommerce-front-end-delta.vercel.app',
+  credentials: true,
+  optionsSuccessStatus: 200
+}));
 
 app.use(cors({
   origin: function (origin, callback) {
