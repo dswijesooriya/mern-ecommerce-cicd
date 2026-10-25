@@ -13,7 +13,9 @@ const port = process.env.PORT || 4000
 connectDB()
 
 app.use(express.json())
-app.use(cors())
+app.use(cors({
+  origin: 'https://mern-ecommerce-front-end-delta.vercel.app'
+}));
 
 app.use('/api/user', userRouter)
 app.use('/api/product', productRouter)
