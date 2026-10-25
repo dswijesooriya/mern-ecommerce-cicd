@@ -60,6 +60,9 @@ jobs:
       - name: Check Working Directory
         run: pwd && ls -la
         
+      - name: Install Dependencies
+        run: npm ci
+       
       - name: Build Project Artifacts
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
