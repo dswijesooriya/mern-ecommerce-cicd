@@ -12,37 +12,28 @@ on:
       - '.github/workflows/deploy-backend.yml'
 
 jobs:
-  # JOB 1: Continuous Integration (Testing)
   test:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./back-end
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
           cache-dependency-path: back-end/package-lock.json
-          
-      - name: Install Dependencies
-        run: npm ci
-        
-      - name: Run Tests
-        run: npm test --if-present
+      - run: npm ci
+      - run: npm test --if-present
 
-  # JOB 2: Continuous Deployment (Build & Deploy)
   deploy:
-    needs: test # Waits for tests to pass
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -51,21 +42,19 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
-      # Explicitly set the working directory for Vercel commands
       - name: Pull Vercel Environment Information
         working-directory: ./back-end
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
+      # 1. Install dependencies OURSELVES, so Vercel doesn't have to.
       - name: Install Backend Dependencies
         working-directory: ./back-end
         run: npm ci
 
+      # 2. Build. Vercel will now skip its own 'npm install' step.
       - name: Build Project Artifacts
         working-directory: ./back-end
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          # Explicitly pass the PATH so Vercel can find 'npm'
-          PATH: /opt/hostedtoolcache/node/20.*/x64/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 
       - name: Deploy Project Artifacts to Vercel
         working-directory: ./back-end
