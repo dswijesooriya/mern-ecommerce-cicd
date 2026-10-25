@@ -10,17 +10,18 @@ import orderRouter from './routes/orderRouter.js'
 
 const app = express()
 const port = process.env.PORT || 4000
-connectDB()
-
+app.use(cors())
 app.use(express.json())
 
-// 2. Fixed: Removed the duplicate CORS blocks. 
-// Using '*' temporarily guarantees it works. You can restrict it later.
-app.use(cors({
-  origin: '*',
-  credentials: true,
-  optionsSuccessStatus: 200
-}));
+app.use(async (req, res, next) => {
+  try {
+    await connectDB()
+    next()
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ success: false, message: 'Database connection failed' })
+  }
+})
 
 app.use('/api/user', userRouter)
 app.use('/api/product', productRouter)
