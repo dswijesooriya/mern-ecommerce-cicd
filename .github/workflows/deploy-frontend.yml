@@ -7,8 +7,7 @@ env:
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
       - 'front-end/**'
       - '.github/workflows/deploy-frontend.yml'
@@ -16,7 +15,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     defaults:
       run:
         working-directory: ./front-end
@@ -32,7 +30,7 @@ jobs:
           cache: npm
           cache-dependency-path: front-end/package-lock.json
 
-      - name: Install Frontend Dependencies
+      - name: Install Dependencies
         run: npm ci
 
       - name: Run Lint
@@ -57,14 +55,15 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
-      - name: Verify Frontend Directory
+      - name: Check Repository Structure
         run: |
           pwd
           ls -la
           ls -la front-end
+          test -f front-end/package.json
 
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Deploy Frontend to Vercel
+      - name: Deploy Frontend
         run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
