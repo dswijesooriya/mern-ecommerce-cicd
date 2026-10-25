@@ -27,9 +27,11 @@ jobs:
       - run: npm ci
       - run: npm test --if-present
 
+  
   deploy:
     needs: test
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -42,8 +44,14 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
-      # Notice we are skipping 'vercel pull' and 'vercel build' completely.
-      # We just deploy directly to Vercel's cloud builders.
-      - name: Deploy to Vercel
-        working-directory: ./back-end
+      - name: Verify Tools
+        run: |
+          node --version
+          npm --version
+          vercel --version
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy Backend to Vercel
         run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
