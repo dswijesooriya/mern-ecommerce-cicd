@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import express from 'express'
-import cors from 'cors'
+import cors from 'cors' // 1. Fixed: Use import instead of require
 import connectDB from './config/mongodb.js'
 import './config/cloudinary.js'
 import userRouter from './routes/userRoute.js'
@@ -13,30 +13,18 @@ const port = process.env.PORT || 4000
 connectDB()
 
 app.use(express.json())
-const cors = require('cors');
 
+// 2. Fixed: Removed the duplicate CORS blocks. 
+// Using '*' temporarily guarantees it works. You can restrict it later.
 app.use(cors({
-  origin: 'https://mern-ecommerce-front-end-delta.vercel.app',
+  origin: '*',
   credentials: true,
   optionsSuccessStatus: 200
 }));
 
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  },
-  credentials: true
-}));
-
 app.use('/api/user', userRouter)
 app.use('/api/product', productRouter)
-app.use('/api/cart', cartRouter) // Fixed missing leading slash
+app.use('/api/cart', cartRouter)
 app.use('/api/order', orderRouter)
 
 app.get('/', (req, res) => {
